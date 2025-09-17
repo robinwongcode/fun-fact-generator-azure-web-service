@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fun Fact Generator API</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+            color: #333;
+        }
+        .container {
+            background-color: white;
+            border-radius: 8px;
+            padding: 30px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #0078d4;
+            text-align: center;
+        }
+        .endpoint {
+            background-color: #f8f9fa;
+            border-left: 4px solid #0078d4;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 0 4px 4px 0;
+        }
+        code {
+            background-color: #eee;
+            padding: 2px 5px;
+            border-radius: 3px;
+        }
+        .btn {
+            background-color: #0078d4;
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+            margin: 10px 0;
+        }
+        .btn:hover {
+            background-color: #106ebe;
+        }
+        #factResult {
+            margin-top: 20px;
+            padding: 15px;
+            border-radius: 4px;
+            background-color: #e7f3ff;
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Fun Fact Generator API</h1>
+        <p>This API provides random fun facts from the <a href="https://uselessfacts.jsph.pl/" target="_blank">Useless Facts API</a>.</p>
+
+        <h2>API Endpoints</h2>
+
+        <div class="endpoint">
+            <h3>Get Fact with Details</h3>
+            <p><code>GET /api/fact</code></p>
+            <p>Returns a JSON object with the fact, source, and permalink.</p>
+            <button class="btn" onclick="fetchFact()">Try it</button>
+        </div>
+
+        <div class="endpoint">
+            <h3>Get Fact Text Only</h3>
+            <p><code>GET /api/fact/text</code></p>
+            <p>Returns just the fact text as plain text.</p>
+            <button class="btn" onclick="fetchFactText()">Try it</button>
+        </div>
+
+        <div id="factResult"></div>
+    </div>
+
+    <script>
+        function fetchFact() {
+            fetch('/api/fact')
+                .then(response => response.json())
+                .then(data => {
+                    const resultDiv = document.getElementById('factResult');
+                    resultDiv.style.display = 'block';
+
+                    if (data.status === 'success') {
+                        resultDiv.innerHTML = `
+                            <h3>Fun Fact:</h3>
+                            <p>${data.fact}</p>
+                            <p><strong>Source:</strong> ${data.source}</p>
+                            <p><a href="${data.permalink}" target="_blank">View original</a></p>
+                        `;
+                    } else {
+                        resultDiv.innerHTML = `<p>Error: ${data.error}</p>`;
+                    }
+                })
+                .catch(error => {
+                    const resultDiv = document.getElementById('factResult');
+                    resultDiv.style.display = 'block';
+                    resultDiv.innerHTML = `<p>Error fetching fact: ${error}</p>`;
+                });
+        }
+
+        function fetchFactText() {
+            fetch('/api/fact/text')
+                .then(response => response.text())
+                .then(text => {
+                    const resultDiv = document.getElementById('factResult');
+                    resultDiv.style.display = 'block';
+                    resultDiv.innerHTML = `
+                        <h3>Fun Fact:</h3>
+                        <p>${text}</p>
+                    `;
+                })
+                .catch(error => {
+                    const resultDiv = document.getElementById('factResult');
+                    resultDiv.style.display = 'block';
+                    resultDiv.innerHTML = `<p>Error fetching fact: ${error}</p>`;
+                });
+        }
+    </script>
+</body>
+</html>
